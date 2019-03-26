@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>2938210d-f694-4cf4-b2a1-30b9ebac1dd8</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>main.py</StartupFile>
+    <StartupFile>ncf_keras_main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,11 +21,26 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="constants.py" />
+    <Compile Include="data_pipeline.py" />
+    <Compile Include="data_preprocessing.py" />
+    <Compile Include="data_test.py" />
+    <Compile Include="flags\core.py" />
+    <Compile Include="flags\flags_test.py" />
+    <Compile Include="flags\_base.py" />
+    <Compile Include="flags\_benchmark.py" />
+    <Compile Include="flags\_conventions.py" />
+    <Compile Include="flags\_misc.py" />
+    <Compile Include="flags\__init__.py" />
     <Compile Include="movielens.py" />
-    <Compile Include="main.py" />
+    <Compile Include="ncf_common.py" />
+    <Compile Include="ncf_keras_main.py" />
     <Compile Include="neumf_model.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="popen_helper.py" />
+    <Compile Include="stat_utils.py" />
+    <Folder Include="flags" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

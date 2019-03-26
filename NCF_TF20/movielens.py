@@ -17,10 +17,6 @@
 Download the dataset, and perform basic preprocessing.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 import sys
 import tempfile
@@ -29,14 +25,11 @@ import zipfile
 # pylint: disable=g-bad-import-order
 import numpy as np
 import pandas as pd
-import six
-from six.moves import urllib  # pylint: disable=redefined-builtin
+import urllib  # pylint: disable=redefined-builtin
 from absl import app as absl_app
 from absl import flags
 import tensorflow as tf
 # pylint: enable=g-bad-import-order
-
-from official.utils.flags import core as flags_core
 
 
 ML_1M = "ml-1m"
@@ -100,10 +93,10 @@ def _download_and_clean(dataset, data_dir):
 
   expected_files = ["{}.zip".format(dataset), RATINGS_FILE, MOVIES_FILE]
 
-  tf.gfile.MakeDirs(data_subdir)
+  tf.compat.v1.gfile.MakeDirs(data_subdir)
   if set(expected_files).intersection(
-      tf.gfile.ListDirectory(data_subdir)) == set(expected_files):
-    tf.logging.info("Dataset {} has already been downloaded".format(dataset))
+      tf.compat.v1.gfile.ListDirectory(data_subdir)) == set(expected_files):
+    print("Dataset {} has already been downloaded".format(dataset))
     return
 
   url = "{}{}.zip".format(_DATA_URL, dataset)
@@ -114,9 +107,9 @@ def _download_and_clean(dataset, data_dir):
     zip_path, _ = urllib.request.urlretrieve(url, zip_path)
     statinfo = os.stat(zip_path)
     # A new line to clear the carriage return from download progress
-    # tf.logging.info is not applicable here
+    # print is not applicable here
     print()
-    tf.logging.info(
+    print(
         "Successfully downloaded {} {} bytes".format(
             zip_path, statinfo.st_size))
 
@@ -127,16 +120,16 @@ def _download_and_clean(dataset, data_dir):
     else:
       _regularize_20m_dataset(temp_dir)
 
-    for fname in tf.gfile.ListDirectory(temp_dir):
-      if not tf.gfile.Exists(os.path.join(data_subdir, fname)):
-        tf.gfile.Copy(os.path.join(temp_dir, fname),
+    for fname in tf.compat.v1.gfile.ListDirectory(temp_dir):
+      if not tf.compat.v1.gfile.Exists(os.path.join(data_subdir, fname)):
+        tf.compat.v1.gfile.Copy(os.path.join(temp_dir, fname),
                       os.path.join(data_subdir, fname))
       else:
-        tf.logging.info("Skipping copy of {}, as it already exists in the "
+        print("Skipping copy of {}, as it already exists in the "
                         "destination folder.".format(fname))
 
   finally:
-    tf.gfile.DeleteRecursively(temp_dir)
+    tf.compat.v1.gfile.DeleteRecursively(temp_dir)
 
 
 def _transform_csv(input_path, output_path, names, skip_first, separator=","):
@@ -149,11 +142,9 @@ def _transform_csv(input_path, output_path, names, skip_first, separator=","):
     skip_first: Boolean of whether to skip the first line of the raw csv.
     separator: Character used to separate fields in the raw csv.
   """
-  if six.PY2:
-    names = [n.decode("utf-8") for n in names]
 
-  with tf.gfile.Open(output_path, "wb") as f_out, \
-      tf.gfile.Open(input_path, "rb") as f_in:
+  with tf.compat.v1.gfile.Open(output_path, "wb") as f_out, \
+      tf.compat.v1.gfile.Open(input_path, "rb") as f_in:
 
     # Write column names to the csv.
     f_out.write(",".join(names).encode("utf-8"))
@@ -199,7 +190,7 @@ def _regularize_1m_dataset(temp_dir):
       output_path=os.path.join(temp_dir, MOVIES_FILE),
       names=MOVIE_COLUMNS, skip_first=False, separator="::")
 
-  tf.gfile.DeleteRecursively(working_dir)
+  tf.compat.v1.gfile.DeleteRecursively(working_dir)
 
 
 def _regularize_20m_dataset(temp_dir):
@@ -233,7 +224,7 @@ def _regularize_20m_dataset(temp_dir):
       output_path=os.path.join(temp_dir, MOVIES_FILE),
       names=MOVIE_COLUMNS, skip_first=True, separator=",")
 
-  tf.gfile.DeleteRecursively(working_dir)
+  tf.compat.v1.gfile.DeleteRecursively(working_dir)
 
 
 def download(dataset, data_dir):
@@ -244,14 +235,14 @@ def download(dataset, data_dir):
 
 
 def ratings_csv_to_dataframe(data_dir, dataset):
-  with tf.gfile.Open(os.path.join(data_dir, dataset, RATINGS_FILE)) as f:
+  with tf.compat.v1.gfile.Open(os.path.join(data_dir, dataset, RATINGS_FILE)) as f:
     return pd.read_csv(f, encoding="utf-8")
 
 
 def csv_to_joint_dataframe(data_dir, dataset):
   ratings = ratings_csv_to_dataframe(data_dir, dataset)
 
-  with tf.gfile.Open(os.path.join(data_dir, dataset, MOVIES_FILE)) as f:
+  with tf.compat.v1.gfile.Open(os.path.join(data_dir, dataset, MOVIES_FILE)) as f:
     movies = pd.read_csv(f, encoding="utf-8")
 
   df = ratings.merge(movies, on=ITEM_COLUMN)
@@ -282,27 +273,11 @@ def integerize_genres(dataframe):
 
   return dataframe
 
-
-def define_data_download_flags():
-  """Add flags specifying data download arguments."""
-  flags.DEFINE_string(
-      name="data_dir", default="/tmp/movielens-data/",
-      help=flags_core.help_wrap(
-          "Directory to download and extract data."))
-
-  flags.DEFINE_enum(
-      name="dataset", default=None,
-      enum_values=DATASETS, case_sensitive=False,
-      help=flags_core.help_wrap("Dataset to be trained and evaluated."))
-
-
 def main(_):
   """Download and extract the data from GroupLens website."""
-  download(flags.FLAGS.dataset, flags.FLAGS.data_dir)
+  download(ML_20M, '.\movielens-data')
 
 
 if __name__ == "__main__":
-  tf.logging.set_verbosity(tf.logging.INFO)
-  define_data_download_flags()
   FLAGS = flags.FLAGS
   absl_app.run(main)
