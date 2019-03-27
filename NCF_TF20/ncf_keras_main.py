@@ -159,7 +159,7 @@ def run_ncf(_):
       verbose=2)
 
   keras_model.summary()
-  utils.plot_model(keras_model,'ncf_model.png',show_shapes=True)
+  # utils.plot_model(keras_model,'ncf_model.png',show_shapes=True)
 
   print("Training done. Start evaluating")
 
