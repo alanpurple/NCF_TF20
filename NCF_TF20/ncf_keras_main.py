@@ -163,10 +163,7 @@ def run_ncf(_):
 
   print("Training done. Start evaluating")
 
-  eval_results = keras_model.evaluate(
-      eval_input_dataset,
-      steps=num_eval_steps,
-      verbose=2)
+  eval_results = keras_model.evaluate(eval_input_dataset)
 
   print("Keras evaluation is done.")
 
