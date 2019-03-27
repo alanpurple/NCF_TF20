@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers,Input,Model,regularizers,metrics
+import constants as rconst
 
 import movielens
 
