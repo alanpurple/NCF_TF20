@@ -50,7 +50,8 @@ NUM_EVAL_NEGATIVES = 999
 TOP_K = 10  # Top-k list for evaluation
 HR_KEY = "HR"
 NDCG_KEY = "NDCG"
-DUPLICATE_MASK = "duplicate_mask"
+#DUPLICATE_MASK = "duplicate_mask"
+DUPLICATE_MASK=VALID_POINT_MASK
 
 # Metric names
 HR_METRIC_NAME = "HR_METRIC"

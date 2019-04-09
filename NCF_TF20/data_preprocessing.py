@@ -30,7 +30,6 @@ import movielens
 import constants as rconst
 import data_pipeline
 
-
 DATASET_TO_NUM_USERS_AND_ITEMS = {
     "ml-1m": (6040, 3706),
     "ml-20m": (138493, 26744)
@@ -75,9 +74,9 @@ def _filter_index_sort(raw_rating_path, cache_path):
     IDs to regularized user IDs, and a dict mapping raw item IDs to regularized
     item IDs.
   """
-  valid_cache = tf.compat.v1.gfile.Exists(cache_path)
+  valid_cache = tf.io.gfile.exists(cache_path)
   if valid_cache:
-    with tf.compat.v1.gfile.Open(cache_path, "rb") as f:
+    with tf.io.gfile.GFile(cache_path, "rb") as f:
       cached_data = pickle.load(f)
 
     cache_age = time.time() - cached_data.get("create_time", 0)
@@ -90,12 +89,12 @@ def _filter_index_sort(raw_rating_path, cache_path):
 
     if not valid_cache:
       tf.compat.v1.logging.info("Removing stale raw data cache file.")
-      tf.compat.v1.gfile.Remove(cache_path)
+      tf.io.gfile.remove(cache_path)
 
   if valid_cache:
     data = cached_data
   else:
-    with tf.compat.v1.gfile.Open(raw_rating_path) as f:
+    with tf.io.gfile.GFile(raw_rating_path) as f:
       df = pd.read_csv(f)
 
     # Get the info of users who have more than 20 ratings on items
@@ -161,7 +160,7 @@ def _filter_index_sort(raw_rating_path, cache_path):
     }
 
     tf.compat.v1.logging.info("Writing raw data cache.")
-    with tf.compat.v1.gfile.Open(cache_path, "wb") as f:
+    with tf.io.gfile.GFile(cache_path, "wb") as f:
       pickle.dump(data, f, protocol=pickle.HIGHEST_PROTOCOL)
 
   # TODO(robieta): MLPerf cache clear.

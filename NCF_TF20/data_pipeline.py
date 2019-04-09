@@ -97,33 +97,33 @@ class DatasetManager(object):
     return (self._epochs_completed - self._epochs_requested >=
             rconst.CYCLES_TO_BUFFER and self._is_training)
 
-  def put(self, index, data):
-    # type: (int, dict) -> None
-    """Store data for later consumption.
+  # def put(self, index, data):
+  #   # type: (int, dict) -> None
+  #   """Store data for later consumption.
 
-    Because there are several paths for storing and yielding data (queues,
-    lists, files) the data producer simply provides the data in a standard
-    format at which point the dataset manager handles storing it in the correct
-    form.
+  #   Because there are several paths for storing and yielding data (queues,
+  #   lists, files) the data producer simply provides the data in a standard
+  #   format at which point the dataset manager handles storing it in the correct
+  #   form.
 
-    Args:
-      index: Used to select shards when writing to files.
-      data: A dict of the data to be stored. This method mutates data, and
-        therefore expects to be the only consumer.
-    """
+  #   Args:
+  #     index: Used to select shards when writing to files.
+  #     data: A dict of the data to be stored. This method mutates data, and
+  #       therefore expects to be the only consumer.
+  #   """
 
 
-    if self._is_training:
-        mask_start_index = data.pop(rconst.MASK_START_INDEX)
-        batch_size = data[movielens.ITEM_COLUMN].shape[0]
-        data[rconst.VALID_POINT_MASK] = np.less(np.arange(batch_size),
-                                            mask_start_index)
-        data = (data, data.pop("labels"))
-    self._result_queue.put(data)
+  #   if self._is_training:
+  #       mask_start_index = data.pop(rconst.MASK_START_INDEX)
+  #       batch_size = data[movielens.ITEM_COLUMN].shape[0]
+  #       data[rconst.VALID_POINT_MASK] = np.less(np.arange(batch_size),
+  #                                           mask_start_index)
+  #       data = (data, data.pop("labels"))
+  #   self._result_queue.put(data)
 
   def start_construction(self):
     if self._stream_files:
-      tf.compat.v1.gfile.MakeDirs(self.current_data_root)
+      tf.io.gfile.makedirs(self.current_data_root)
       template = os.path.join(self.current_data_root, rconst.SHARD_TEMPLATE)
       self._writers = [tf.io.TFRecordWriter(template.format(i))
                        for i in range(rconst.NUM_FILE_SHARDS)]
@@ -294,7 +294,7 @@ class BaseDataConstructor(threading.Thread):
     self._shuffle_with_forkpool = not stream_files
     if stream_files:
       self._shard_root = epoch_dir or tempfile.mkdtemp(prefix="ncf_")
-      atexit.register(tf.compat.v1.gfile.DeleteRecursively, dirname=self._shard_root)
+      atexit.register(tf.io.gfile.remove, dirname=self._shard_root)
     else:
       self._shard_root = None
 

@@ -29,11 +29,11 @@ class Neumf(Model):
 
         self.user_embed=layers.Embedding(num_users, mf_dim + model_layers[0] // 2,
                                          embeddings_initializer=embedding_initializer,
-                                         embeddings_regularizer=tf.keras.regularizers.l2(mf_regularization),
+                                         embeddings_regularizer=regularizers.l2(mf_regularization),
                                          input_length=1, name="embedding_user")
         self.item_embed=layers.Embedding(num_items,mf_dim + model_layers[0] // 2,
                                          embeddings_initializer=embedding_initializer,
-                                         embeddings_regularizer=tf.keras.regularizers.l2(mf_regularization),
+                                         embeddings_regularizer=regularizers.l2(mf_regularization),
                                          input_length=1, name="embedding_item")
 
         num_layer=len(model_layers)
